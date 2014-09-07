@@ -1,9 +1,12 @@
+
 package com.badlogic.gdx.graphics.g3d.particles.values;
 
+import com.badlogic.gdx.graphics.g3d.particles.ParticleChannels;
+import com.badlogic.gdx.graphics.g3d.particles.ParallelArray.FloatChannel;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 
-/** Encapsulate the formulas to spawn a particle on a line shape. 
+/** Encapsulate the formulas to spawn a particle on a line shape.
  * @author Inferno */
 public final class LineSpawnShapeValue extends PrimitiveSpawnShapeValue {
 
@@ -12,18 +15,27 @@ public final class LineSpawnShapeValue extends PrimitiveSpawnShapeValue {
 		load(value);
 	}
 
-	public LineSpawnShapeValue () {}
+	public LineSpawnShapeValue () {
+	}
 
 	@Override
-	public void spawnAux (Vector3 vector, float percent) {
-		float width = spawnWidth + (spawnWidthDiff * spawnWidthValue.getScale(percent));
-		float height = spawnHeight + (spawnHeightDiff * spawnHeightValue.getScale(percent));
-		float depth = spawnDepth + (spawnDepthDiff * spawnDepthValue.getScale(percent));
+	public FloatChannel spawn (FloatChannel positionChannel, int startIndex, int count, float percent) {
+		TMP_V1.x = spawnWidth + (spawnWidthDiff * spawnWidthValue.getScale(percent));
+		TMP_V1.y = spawnHeight + (spawnHeightDiff * spawnHeightValue.getScale(percent));
+		TMP_V1.z = spawnDepth + (spawnDepthDiff * spawnDepthValue.getScale(percent));
 
-		float a = MathUtils.random();
-		vector.x = a * width;
-		vector.y = a * height;
-		vector.z = a * depth;
+		// repeat this one for each spawn shape class
+		if (xOffsetValue.active) TMP_V1.x += xOffsetValue.newLowValue();
+		if (yOffsetValue.active) TMP_V1.y += yOffsetValue.newLowValue();
+		if (zOffsetValue.active) TMP_V1.z += zOffsetValue.newLowValue();
+
+		for (int i = startIndex * positionChannel.strideSize, c = i + count * positionChannel.strideSize; i < c; i += positionChannel.strideSize) {
+			float a = MathUtils.random();
+			positionChannel.data[i + ParticleChannels.XOffset] = a * TMP_V1.x;
+			positionChannel.data[i + ParticleChannels.YOffset] = a * TMP_V1.y;
+			positionChannel.data[i + ParticleChannels.ZOffset] = a * TMP_V1.z;
+		}
+		return positionChannel;
 	}
 
 	@Override
