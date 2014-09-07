@@ -50,7 +50,6 @@ public class SpawnInfluencer extends Influencer {
 		spawnShapeValue.spawn(positionChannel, startIndex, count, controller.emitter.percent);
 		Matrix4.mulVec(controller.transform.val, positionChannel.data, startIndex * positionChannel.strideSize
 			+ ParticleChannels.XOffset, count, positionChannel.strideSize);
-		TMP_V1.mul(controller.transform);
 	}
 
 	@Override
