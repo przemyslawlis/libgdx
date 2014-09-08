@@ -33,6 +33,10 @@ public abstract class  Emitter extends ParticleControllerComponent implements Js
 		controller.particles.size = 0;
 	}
 	
+	public abstract boolean isComplete ();
+	public abstract void updateEmission();
+	public abstract void updateParticles();
+	
 	public int getMinParticleCount () {
 		return minParticleCount;
 	}

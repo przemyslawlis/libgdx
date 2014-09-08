@@ -103,7 +103,32 @@ public class RegularEmitter extends Emitter implements Json.Serializable {
 		}
 	}
 
-	public void update () {
+	@Override
+	public void updateParticles () {
+		int deltaMillis = (int)(controller.deltaTime * 1000);
+
+		// Update particles
+		int activeParticles = controller.particles.size;
+		for (int i = 0, k = 0; i < controller.particles.size;) {
+			if ((lifeChannel.data[k + ParticleChannels.CurrentLifeOffset] -= deltaMillis) <= 0) {
+				controller.particles.removeElement(i);
+				continue;
+			} else {
+				lifeChannel.data[k + ParticleChannels.LifePercentOffset] = 1
+					- lifeChannel.data[k + ParticleChannels.CurrentLifeOffset]
+					/ lifeChannel.data[k + ParticleChannels.TotalLifeOffset];
+			}
+			++i;
+			k += lifeChannel.strideSize;
+		}
+
+		if (controller.particles.size < activeParticles) {
+			controller.killParticles(controller.particles.size, activeParticles - controller.particles.size);
+		}
+	}
+
+	@Override
+	public void updateEmission () {
 		int deltaMillis = (int)(controller.deltaTime * 1000);
 
 		if (delayTimer < delay) {
@@ -115,9 +140,9 @@ public class RegularEmitter extends Emitter implements Json.Serializable {
 				durationTimer += deltaMillis;
 				percent = durationTimer / (float)duration;
 			} else {
-				if (continuous && emit && emissionMode == EmissionMode.Enabled)
+				if (continuous && emissionMode == EmissionMode.Enabled) {
 					controller.start();
-				else
+				} else
 					emit = false;
 			}
 
@@ -137,25 +162,6 @@ public class RegularEmitter extends Emitter implements Json.Serializable {
 				}
 				if (controller.particles.size < minParticleCount) addParticles(minParticleCount - controller.particles.size);
 			}
-		}
-
-		// Update particles
-		int activeParticles = controller.particles.size;
-		for (int i = 0, k = 0; i < controller.particles.size;) {
-			if ((lifeChannel.data[k + ParticleChannels.CurrentLifeOffset] -= deltaMillis) <= 0) {
-				controller.particles.removeElement(i);
-				continue;
-			} else {
-				lifeChannel.data[k + ParticleChannels.LifePercentOffset] = 1
-					- lifeChannel.data[k + ParticleChannels.CurrentLifeOffset]
-					/ lifeChannel.data[k + ParticleChannels.TotalLifeOffset];
-			}
-			++i;
-			k += lifeChannel.strideSize;
-		}
-
-		if (controller.particles.size < activeParticles) {
-			controller.killParticles(controller.particles.size, activeParticles - controller.particles.size);
 		}
 	}
 
@@ -206,9 +212,10 @@ public class RegularEmitter extends Emitter implements Json.Serializable {
 		this.emissionMode = emissionMode;
 	}
 
+	@Override
 	public boolean isComplete () {
-		if (delayTimer < delay) return false;
-		return durationTimer >= duration && controller.particles.size == 0;
+		if (delayTimer < delay || continuous && emissionMode == EmissionMode.Enabled) return false;
+		return (durationTimer >= duration || emissionMode == EmissionMode.Disabled) && controller.particles.size == 0;
 	}
 
 	public float getPercentComplete () {

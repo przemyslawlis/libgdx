@@ -1,11 +1,11 @@
+
 package com.badlogic.gdx.graphics.g3d.particles.values;
 
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 
-/** A value which has a defined minimum and maximum upper and lower bounds.
- * Defines the variations of the value on a time line. 
+/** A value which has a defined minimum and maximum upper and lower bounds. Defines the variations of the value on a time line.
  * @author Inferno */
 public class ScaledNumericValue extends RangedNumericValue {
 	private float[] scaling = {1};
@@ -14,6 +14,7 @@ public class ScaledNumericValue extends RangedNumericValue {
 	private boolean relative = false;
 
 	public float newHighValue () {
+		if (highMin == highMax) return highMax;
 		return highMin + (highMax - highMin) * MathUtils.random();
 	}
 
@@ -70,8 +71,8 @@ public class ScaledNumericValue extends RangedNumericValue {
 	public float getScale (float percent) {
 		int endIndex = -1;
 		int n = timeline.length;
-		//if (percent >= timeline[n-1]) 
-		//	return scaling[n - 1];
+		// if (percent >= timeline[n-1])
+		// return scaling[n - 1];
 		for (int i = 1; i < n; i++) {
 			float t = timeline[i];
 			if (t > percent) {
@@ -96,7 +97,7 @@ public class ScaledNumericValue extends RangedNumericValue {
 		System.arraycopy(value.timeline, 0, timeline, 0, timeline.length);
 		relative = value.relative;
 	}
-	
+
 	@Override
 	public void write (Json json) {
 		super.write(json);
@@ -116,6 +117,5 @@ public class ScaledNumericValue extends RangedNumericValue {
 		scaling = json.readValue("scaling", float[].class, jsonData);
 		timeline = json.readValue("timeline", float[].class, jsonData);
 	}
-	
-	
+
 }
