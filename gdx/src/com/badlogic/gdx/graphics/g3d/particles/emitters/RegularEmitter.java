@@ -129,12 +129,13 @@ public class RegularEmitter extends Emitter implements Json.Serializable {
 
 	@Override
 	public void updateEmission () {
+		if (emissionMode == EmissionMode.Disabled) return;
 		int deltaMillis = (int)(controller.deltaTime * 1000);
 
 		if (delayTimer < delay) {
 			delayTimer += deltaMillis;
 		} else {
-			boolean emit = emissionMode != EmissionMode.Disabled;
+			boolean emit = true;
 			// End check
 			if (durationTimer < duration) {
 				durationTimer += deltaMillis;

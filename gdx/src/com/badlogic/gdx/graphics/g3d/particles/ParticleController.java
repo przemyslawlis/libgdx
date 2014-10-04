@@ -200,7 +200,6 @@ public class ParticleController implements Json.Serializable, ResourceData.Confi
 
 	/** Updates the particles data */
 	public void update () {
-		if (emitter.isComplete()) return;
 		emitter.updateParticles();
 		for (Influencer influencer : influencers)
 			influencer.update();
