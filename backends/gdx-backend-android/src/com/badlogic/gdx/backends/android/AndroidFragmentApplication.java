@@ -4,6 +4,7 @@ package com.badlogic.gdx.backends.android;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Debug;
@@ -62,6 +63,7 @@ public class AndroidFragmentApplication extends Fragment implements AndroidAppli
 	protected final Array<Runnable> runnables = new Array<Runnable>();
 	protected final Array<Runnable> executedRunnables = new Array<Runnable>();
 	protected final Array<LifecycleListener> lifecycleListeners = new Array<LifecycleListener>();
+	private final Array<AndroidEventListener> androidEventListeners = new Array<AndroidEventListener>();
 	protected int logLevel = LOG_INFO;
 
 	protected Callbacks callbacks;
@@ -104,10 +106,10 @@ public class AndroidFragmentApplication extends Fragment implements AndroidAppli
 	@Override
 	public void useImmersiveMode (boolean use) {
 		if (!use || getVersion() < Build.VERSION_CODES.KITKAT) return;
-
-		View view = getApplicationWindow().getDecorView();
-
+		
 		try {
+			View view = this.graphics.getView();
+
 			Method m = View.class.getMethod("setSystemUiVisibility", int.class);
 			int code = View.SYSTEM_UI_FLAG_LAYOUT_STABLE
 						| View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
@@ -117,7 +119,7 @@ public class AndroidFragmentApplication extends Fragment implements AndroidAppli
 						| View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
 			m.invoke(view, code);
 		} catch (Exception e) {
-			log("AndroidApplication", "Can't set immersive mode", e);
+			log("AndroidApplication", "Failed to setup immersive mode, a throwable has occurred.", e);
 		}
 	}
 
@@ -416,6 +418,32 @@ public class AndroidFragmentApplication extends Fragment implements AndroidAppli
 	@Override
 	public Array<LifecycleListener> getLifecycleListeners () {
 		return lifecycleListeners;
+	}
+
+	@Override
+	public void onActivityResult (int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+
+		// forward events to our listeners if there are any installed
+		synchronized (androidEventListeners) {
+			for (int i = 0; i < androidEventListeners.size; i++) {
+				androidEventListeners.get(i).onActivityResult(requestCode, resultCode, data);
+			}
+		}
+	}
+
+	/** Adds an event listener for Android specific event such as onActivityResult(...). */
+	public void addAndroidEventListener (AndroidEventListener listener) {
+		synchronized (androidEventListeners) {
+			androidEventListeners.add(listener);
+		}
+	}
+
+	/** Removes an event listener for Android specific event such as onActivityResult(...). */
+	public void removeAndroidEventListener (AndroidEventListener listener) {
+		synchronized (androidEventListeners) {
+			androidEventListeners.removeValue(listener, true);
+		}
 	}
 
 	@Override

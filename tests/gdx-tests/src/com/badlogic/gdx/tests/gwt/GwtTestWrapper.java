@@ -19,6 +19,7 @@ package com.badlogic.gdx.tests.gwt;
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.Input.TextInputListener;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
@@ -51,6 +52,7 @@ import com.badlogic.gdx.tests.BlitTest;
 import com.badlogic.gdx.tests.Box2DCharacterControllerTest;
 import com.badlogic.gdx.tests.Box2DTest;
 import com.badlogic.gdx.tests.Box2DTestCollection;
+import com.badlogic.gdx.tests.BufferUtilsTest;
 import com.badlogic.gdx.tests.ComplexActionTest;
 import com.badlogic.gdx.tests.CustomShaderSpriteBatchTest;
 import com.badlogic.gdx.tests.DecalTest;
@@ -91,7 +93,6 @@ import com.badlogic.gdx.tests.SpriteBatchShaderTest;
 import com.badlogic.gdx.tests.SpriteCacheOffsetTest;
 import com.badlogic.gdx.tests.SpriteCacheTest;
 import com.badlogic.gdx.tests.StageTest;
-import com.badlogic.gdx.tests.StateMachineTest;
 import com.badlogic.gdx.tests.TableTest;
 import com.badlogic.gdx.tests.TextButtonTest;
 import com.badlogic.gdx.tests.TextureAtlasTest;
@@ -303,13 +304,8 @@ public class GwtTestWrapper extends GdxTest {
 		}
 
 		@Override
-		public void getTextInput (TextInputListener listener, String title, String text) {
-			input.getTextInput(listener, title, text);
-		}
-
-		@Override
-		public void getPlaceholderTextInput (TextInputListener listener, String title, String placeholder) {
-			input.getPlaceholderTextInput(listener, title, placeholder);
+		public void getTextInput (TextInputListener listener, String title, String text, String hint) {
+			input.getTextInput(listener, title, text, hint);
 		}
 
 		@Override
@@ -482,6 +478,10 @@ public class GwtTestWrapper extends GdxTest {
 	}, new Instancer() {
 		public GdxTest instance () {
 			return new Box2DTestCollection();
+		}
+	}, new Instancer() {
+		public GdxTest instance () {
+			return new BufferUtilsTest();
 		}
 	}, new Instancer() {
 		public GdxTest instance () {
@@ -698,10 +698,6 @@ public class GwtTestWrapper extends GdxTest {
 		}, new Instancer() {
 			public GdxTest instance () {
 				return new TimeUtilsTest();
-			}
-		}, new Instancer() {
-			public GdxTest instance () {
-				return new StateMachineTest();
 			}
 		}};
 }

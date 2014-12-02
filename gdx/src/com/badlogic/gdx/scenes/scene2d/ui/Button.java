@@ -16,9 +16,11 @@
 
 package com.badlogic.gdx.scenes.scene2d.ui;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener.ChangeEvent;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
@@ -175,25 +177,30 @@ public class Button extends Table implements Disableable {
 	public void draw (Batch batch, float parentAlpha) {
 		validate();
 
+		boolean isPressed = isPressed();
+		boolean isDisabled = isDisabled();
+
 		Drawable background = null;
+		if (isDisabled && style.disabled != null)
+			background = style.disabled;
+		else if (isPressed && style.down != null)
+			background = style.down;
+		else if (isChecked && style.checked != null)
+			background = (style.checkedOver != null && isOver()) ? style.checkedOver : style.checked;
+		else if (isOver() && style.over != null)
+			background = style.over;
+		else if (style.up != null) //
+			background = style.up;
+		setBackground(background);
+
 		float offsetX = 0, offsetY = 0;
-		if (isPressed() && !isDisabled()) {
-			background = style.down == null ? style.up : style.down;
+		if (isPressed && !isDisabled) {
 			offsetX = style.pressedOffsetX;
 			offsetY = style.pressedOffsetY;
 		} else {
-			if (isDisabled() && style.disabled != null)
-				background = style.disabled;
-			else if (isChecked && style.checked != null)
-				background = (isOver() && style.checkedOver != null) ? style.checkedOver : style.checked;
-			else if (isOver() && style.over != null)
-				background = style.over;
-			else
-				background = style.up;
 			offsetX = style.unpressedOffsetX;
 			offsetY = style.unpressedOffsetY;
 		}
-		setBackground(background);
 
 		Array<Actor> children = getChildren();
 		for (int i = 0; i < children.size; i++)
@@ -201,6 +208,10 @@ public class Button extends Table implements Disableable {
 		super.draw(batch, parentAlpha);
 		for (int i = 0; i < children.size; i++)
 			children.get(i).moveBy(-offsetX, -offsetY);
+
+		Stage stage = getStage();
+		if (stage != null && stage.getActionsRequestRendering() && isPressed != clickListener.isPressed())
+			Gdx.graphics.requestRendering();
 	}
 
 	public float getPrefWidth () {

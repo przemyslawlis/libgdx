@@ -40,6 +40,7 @@ import com.badlogic.gdx.tests.g3d.Benchmark3DTest;
 import com.badlogic.gdx.tests.g3d.FogTest;
 import com.badlogic.gdx.tests.g3d.LightsTest;
 import com.badlogic.gdx.tests.g3d.MaterialTest;
+import com.badlogic.gdx.tests.g3d.MeshBuilderTest;
 import com.badlogic.gdx.tests.g3d.ModelTest;
 import com.badlogic.gdx.tests.g3d.ParticleControllerTest;
 import com.badlogic.gdx.tests.g3d.ShaderCollectionTest;
@@ -72,6 +73,7 @@ public class GdxTests {
 		AccelerometerTest.class,
 		ActionSequenceTest.class,
 		ActionTest.class,
+		Affine2Test.class,
 		AlphaTest.class,
 		Animation3DTest.class,
 		AnimationTest.class,
@@ -95,6 +97,7 @@ public class GdxTests {
 		Bresenham2Test.class,
 		BufferUtilsTest.class,
 		BulletTestCollection.class,
+		CpuSpriteBatchTest.class,
 		ContainerTest.class,
 		CullTest.class,
 		DelaunayTriangulatorTest.class,
@@ -139,6 +142,7 @@ public class GdxTests {
 		LightsTest.class,
 		MaterialTest.class,
 		MatrixJNITest.class,
+		MeshBuilderTest.class,
 		MeshShaderTest.class,
 		MipMapTest.class,
 		ModelTest.class,
@@ -190,7 +194,6 @@ public class GdxTests {
 		SpriteCacheTest.class,
 		StagePerformanceTest.class,
 		StageTest.class,
-		StateMachineTest.class,
 		SuperKoalio.class,
 		TableLayoutTest.class,
 		TableTest.class,
@@ -221,7 +224,8 @@ public class GdxTests {
 		ViewportTest2.class,
 		ViewportTest3.class,
 		YDownTest.class,
-		FreeTypeFontLoaderTest.class
+		FreeTypeFontLoaderTest.class,
+		PngTest.class
 		// @on
 
 		// SoundTouchTest.class, Mpg123Test.class, WavTest.class, FreeTypeTest.class,
