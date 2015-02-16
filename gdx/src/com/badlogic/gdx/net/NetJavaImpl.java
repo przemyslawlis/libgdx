@@ -44,7 +44,7 @@ import com.badlogic.gdx.utils.StreamUtils;
 public class NetJavaImpl {
 
 	static class HttpClientResponse implements HttpResponse {
-		private HttpURLConnection connection;
+		private final HttpURLConnection connection;
 		private HttpStatus status;
 
 		public HttpClientResponse (HttpURLConnection connection) throws IOException {
@@ -71,6 +71,12 @@ public class NetJavaImpl {
 		@Override
 		public String getResultAsString () {
 			InputStream input = getInputStream();
+
+			// If the response does not contain any content, input will be null.
+			if (input == null) {
+				return "";
+			}
+
 			try {
 				return StreamUtils.copyStreamToString(input, connection.getContentLength());
 			} catch (IOException e) {
@@ -139,7 +145,7 @@ public class NetJavaImpl {
 			} else {
 				url = new URL(httpRequest.getUrl());
 			}
-			
+
 			final HttpURLConnection connection = (HttpURLConnection)url.openConnection();
 			// should be enabled to upload data.
 			final boolean doingOutPut = method.equalsIgnoreCase(HttpMethods.POST) || method.equalsIgnoreCase(HttpMethods.PUT);
@@ -197,21 +203,23 @@ public class NetJavaImpl {
 							HttpResponseListener listener = listeners.get(httpRequest);
 
 							if (listener != null) {
+								lock.unlock();
 								listener.handleHttpResponse(clientResponse);
+								lock.lock();
 								listeners.remove(httpRequest);
 							}
 
 							connections.remove(httpRequest);
 						} finally {
-							connection.disconnect();
 							lock.unlock();
+							connection.disconnect();
 						}
 					} catch (final Exception e) {
 						connection.disconnect();
-						lock.lock();
-						try {   
+						try {
 							httpResponseListener.failed(e);
-						} finally {	
+						} finally {
+							lock.lock();
 							connections.remove(httpRequest);
 							listeners.remove(httpRequest);
 							lock.unlock();
@@ -219,12 +227,11 @@ public class NetJavaImpl {
 					}
 				}
 			});
-
 		} catch (Exception e) {
-			lock.lock();
 			try {
 				httpResponseListener.failed(e);
 			} finally {
+				lock.lock();
 				connections.remove(httpRequest);
 				listeners.remove(httpRequest);
 				lock.unlock();
@@ -233,13 +240,15 @@ public class NetJavaImpl {
 		}
 	}
 
-	public void cancelHttpRequest (HttpRequest httpRequest) {				
+	public void cancelHttpRequest (HttpRequest httpRequest) {
 		try {
 			lock.lock();
 			HttpResponseListener httpResponseListener = listeners.get(httpRequest);
-	
+
 			if (httpResponseListener != null) {
+				lock.unlock();
 				httpResponseListener.cancelled();
+				lock.lock();
 				connections.remove(httpRequest);
 				listeners.remove(httpRequest);
 			}

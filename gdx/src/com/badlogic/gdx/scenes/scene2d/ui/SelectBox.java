@@ -134,7 +134,7 @@ public class SelectBox<T> extends Widget implements Disableable {
 		if (oldPrefWidth != getPrefWidth()) invalidateHierarchy();
 	}
 
-	/** Set the backing Array that makes up the choices available in the SelectBox */
+	/** Sets the items visible in the select box. */
 	public void setItems (Array<T> newItems) {
 		if (newItems == null) throw new IllegalArgumentException("newItems cannot be null.");
 		float oldPrefWidth = getPrefWidth();
@@ -155,8 +155,7 @@ public class SelectBox<T> extends Widget implements Disableable {
 		invalidateHierarchy();
 	}
 
-	/** Retrieve the backing Array that makes up the chocies available in the SelectBox
-	 * @see SelectBox#setItems(Array) */
+	/** Returns the internal items array. If modified, {@link #setItems(Array)} must be called to reflect the changes. */
 	public Array<T> getItems () {
 		return items;
 	}
@@ -239,7 +238,7 @@ public class SelectBox<T> extends Widget implements Disableable {
 
 	/** Get the set of selected items, useful when multiple items are selected
 	 * @return a Selection object containing the selected elements */
-	public Selection<T> getSelection () {
+	public ArraySelection<T> getSelection () {
 		return selection;
 	}
 
@@ -412,6 +411,7 @@ public class SelectBox<T> extends Widget implements Disableable {
 			if (actor != null && !actor.isDescendantOf(this)) previousScrollFocus = actor;
 			stage.setScrollFocus(this);
 
+			list.selection.set(selectBox.getSelected());
 			list.setTouchable(Touchable.enabled);
 			clearActions();
 			selectBox.onShow(this, below);

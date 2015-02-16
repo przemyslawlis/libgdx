@@ -136,6 +136,7 @@ public class GdxTests {
 		InverseKinematicsTest.class,
 		IsometricTileTest.class,
 		KinematicBodyTest.class,
+		KTXTest.class,
 		LabelScaleTest.class,
 		LabelTest.class,
 		LifeCycleTest.class,
@@ -210,6 +211,9 @@ public class GdxTests {
 		TileTest.class,
 		TiledMapAssetManagerTest.class,
 		TiledMapAtlasAssetManagerTest.class,
+		TiledMapDirectLoaderTest.class,
+		TiledMapModifiedExternalTilesetTest.class,
+		TiledMapObjectLoadingTest.class,
 		TiledMapBench.class,
 		TimerTest.class,
 		TimeUtilsTest.class,
@@ -225,7 +229,8 @@ public class GdxTests {
 		ViewportTest3.class,
 		YDownTest.class,
 		FreeTypeFontLoaderTest.class,
-		PngTest.class
+		PngTest.class,
+		JsonTest.class
 		// @on
 
 		// SoundTouchTest.class, Mpg123Test.class, WavTest.class, FreeTypeTest.class,
